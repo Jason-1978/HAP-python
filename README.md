@@ -190,6 +190,61 @@ To enable or disable at boot, do:
 > sudo systemctl disable HAP-python
 ```
 
+# The above code did not work to enable Auto Running as a Daemon for some reason on my system but this did:
+
+1. I created a file using these commands. (I used nano because of some strange behaviour with my keyboard using SSH that I have just worked around and avoided.) -> 
+```
+cd /etc/systemd/system/
+sudo touch HAP-python.service;
+sudo chmod +755 HAP-python.service;
+sudo nano system/HAP-python.service
+```
+
+2. I input the following code into the file using the raspberry pi website as reference (https://www.raspberrypi.org/documentation/linux/usage/systemd.md) ->
+```
+[Unit]
+Description = HAP-python daemon
+Wants = pigpiod.service  # Remove this if you don't depend on pigpiod
+After = local-fs.target network-online.target pigpiod.service
+
+[Service]
+ExecStart = /usr/bin/python3 -u main_LED.py # main_LED.py is the python file that I am executing in the working directory
+WorkingDirectory = /home/pi/HAP-python # This is where I cloned the repo from github & also placed my python script
+StandardOutput = inherit 
+StandardError = inherit
+Restart = always
+User = pi # It's a good idea to use some unprivileged system user (I ignored this recommendation for now but intend to fix it in the future.)
+
+[Install]
+WantedBy = multi-user.target
+```
+
+3. I then enabled the service then started it ->
+```
+sudo systemctl enable HAP-python.service
+sudo systemctl start HAP-python.service
+```
+
+4. I finally checked to see if the service was loading at boot by simply rebboting ->
+```
+sudo reboot
+```
+
+5. Additional helpful commands include ->
+Manual page:
+```
+man systemd.service
+```
+Status of daemon:
+```
+systemctl status HAP-python
+```
+List of available daemons and their enabled/disabled state:
+```
+systemctl list-unit-files --type service
+```
+
+
 ### Shutdown switch
 
 If you are running `HAP-python` on a Raspberry Pi, you may want to add a
