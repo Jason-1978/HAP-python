@@ -190,7 +190,7 @@ To enable or disable at boot, do:
 > sudo systemctl disable HAP-python
 ```
 
-# The above code did not work to enable Auto Running as a Daemon for some reason on my system but this did:
+### The above code did not work to enable Auto Running as a Daemon for some reason on my system but this did:
 
 1. I created a file using these commands. (I used nano because of some strange behaviour with my keyboard using SSH that I have just worked around and avoided.) -> 
 ```
